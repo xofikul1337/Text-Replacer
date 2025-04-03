@@ -1,6 +1,5 @@
 # Text Replacer Pro
 
-![Text Replacer Pro Screenshot](https://i.postimg.cc/FRv1BWP7/image.png)
 
 A beautifully designed, animated text replacement tool with smart case matching and one-click copy functionality. Perfect for developers, writers, and content creators who need to quickly find and replace text with style.
 
@@ -24,7 +23,7 @@ A beautifully designed, animated text replacement tool with smart case matching 
 
 ## Demo 🚀
 
-[Live Demo](https://your-demo-link-here.com)
+[Live Demo](https://xofikul1337.github.io/Text-Replacer/)
 
 ## Installation 💻
 
