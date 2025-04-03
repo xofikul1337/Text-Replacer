@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Replacer Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            width: 100%;
+            max-width: 700px;
+            transition: var(--transition);
+            transform: translateY(0);
+            opacity: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .container:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 20px 0 15px;
+            font-size: 1.4rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+        
+        textarea, input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: var(--transition);
+            background-color: rgba(255, 255, 255, 0.8);
+            resize: none;
+        }
+        
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
+        }
+        
+        textarea {
+            min-height: 150px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            z-index: -1;
+            transition: var(--transition);
+            opacity: 1;
+        }
+        
+        button:hover::before {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+        
+        button.primary {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+        }
+        
+        button.secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        button.secondary::before {
+            background: white;
+        }
+        
+        button.secondary:hover {
+            color: white;
+        }
+        
+        button i {
+            font-size: 18px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--dark);
+            opacity: 0.8;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        .footer a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+        
+        .footer a:hover::after {
+            width: 100%;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 25px 0;
+            gap: 15px;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            background: rgba(67, 97, 238, 0.2);
+        }
+        
+        .feature i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .feature p {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__fadeInUp">
+        <h2 class="animate__animated animate__fadeIn">Text Replacer Pro</h2>
+        
+        <div class="features animate__animated animate__fadeIn animate__delay-1s">
+            <div class="feature">
+                <i class="fas fa-magic"></i>
+                <p>Smart Case Matching</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-clipboard"></i>
+                <p>One-Click Copy</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <p>Instant Results</p>
+            </div>
+        </div>
+        
+        <div class="input-group animate__animated animate__fadeIn animate__delay-1s">
+            <label for="mainText"><i class="fas fa-align-left"></i> Your Text</label>
+            <textarea id="mainText" placeholder="Paste or type your content here..."></textarea>
+        </div>
+        
+        <div class="input-group animate__animated animate__fadeIn animate__delay-1s">
+            <label for="findText"><i class="fas fa-search"></i> Find Text</label>
+            <input type="text" id="findText" placeholder="Enter text to find..." oninput="toggleReplaceBox()">
+        </div>
+        
+        <div class="input-group animate__animated animate__fadeIn animate__delay-1s" id="replaceContainer" style="display: none;">
+            <label for="replaceText"><i class="fas fa-exchange-alt"></i> Replace With</label>
+            <input type="text" id="replaceText" placeholder="Enter replacement text...">
+        </div>
+        
+        <div class="button-group animate__animated animate__fadeIn animate__delay-2s">
+            <button class="primary" onclick="replaceText()">
+                <i class="fas fa-sync-alt"></i> Replace Text
+            </button>
+        </div>
+        
+        <div class="input-group animate__animated animate__fadeIn animate__delay-2s">
+            <label for="resultText"><i class="fas fa-clipboard-check"></i> Result</label>
+            <textarea id="resultText" readonly></textarea>
+        </div>
+        
+        <div class="button-group animate__animated animate__fadeIn animate__delay-2s">
+            <button class="secondary animate-pulse" onclick="copyResult()">
+                <i class="fas fa-copy"></i> Copy Result
+            </button>
+            <button class="secondary" onclick="clearAll()">
+                <i class="fas fa-broom"></i> Clear All
+            </button>
+        </div>
+    </div>
+    
+    <div class="footer animate__animated animate__fadeIn animate__delay-3s">
+        Developed with <i class="fas fa-heart" style="color: #e63946;"></i> by 
+        <a href="https://xofikul1337.github.io/dev/" target="_blank">Shofikul Islam</a>
+    </div>
+    
+    <script>
+//Coded By : Shofikul Islam. Founder OF : TEAM X 1337
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.querySelector('.container').classList.add('animate__fadeInUp');
+            }, 100);
+        });
+
+        function toggleReplaceBox() {
+            const replaceContainer = document.getElementById('replaceContainer');
+            if (document.getElementById('findText').value) {
+                replaceContainer.style.display = 'block';
+                replaceContainer.classList.add('animate__fadeIn');
+            } else {
+                replaceContainer.style.display = 'none';
+            }
+        }
+
+        function matchCase(original, replacement) {
+            if (!replacement) return original;
+            
+            if (original === original.toUpperCase()) {
+                return replacement.toUpperCase();
+            } else if (original === original.toLowerCase()) {
+                return replacement.toLowerCase();
+            } else if (original[0] === original[0].toUpperCase()) {
+                return replacement.charAt(0).toUpperCase() + replacement.slice(1).toLowerCase();
+            }
+            return replacement;
+        }
+
+        function replaceText() {
+            let mainText = document.getElementById('mainText').value;
+            let findText = document.getElementById('findText').value;
+            let replaceText = document.getElementById('replaceText').value;
+            
+            if (!mainText) {
+                showAlert('Please enter some text to process', 'error');
+                return;
+            }
+            
+            if (findText) {
+                let regex = new RegExp(escapeRegExp(findText), 'gi');
+                let result = mainText.replace(regex, function(match) {
+                    return matchCase(match, replaceText);
+                });
+                
+                document.getElementById('resultText').value = result;
+                
+                
+                const resultArea = document.getElementById('resultText');
+                resultArea.classList.add('animate__animated', 'animate__pulse');
+                setTimeout(() => {
+                    resultArea.classList.remove('animate__animated', 'animate__pulse');
+                }, 1000);
+                
+                showAlert('Text replaced successfully!', 'success');
+            } else {
+                showAlert('Please enter text to find', 'warning');
+            }
+        }
+        
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function copyResult() {
+            let resultText = document.getElementById('resultText');
+            
+            if (!resultText.value) {
+                showAlert('No result to copy', 'warning');
+                return;
+            }
+            
+            resultText.select();
+            document.execCommand('copy');
+            
+          
+            const copyBtn = document.querySelector('button[onclick="copyResult()"]');
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            copyBtn.classList.add('animate__animated', 'animate__bounceIn');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('animate__animated', 'animate__bounceIn');
+            }, 2000);
+            
+            showAlert('Result copied to clipboard!', 'success');
+        }
+        
+        function clearAll() {
+            document.getElementById('mainText').value = '';
+            document.getElementById('findText').value = '';
+            document.getElementById('replaceText').value = '';
+            document.getElementById('resultText').value = '';
+            document.getElementById('replaceContainer').style.display = 'none';
+            
+            // Add animation
+            const container = document.querySelector('.container');
+            container.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                container.classList.remove('animate__animated', 'animate__shakeX');
+            }, 1000);
+            
+            showAlert('All fields cleared', 'info');
+        }
+        
+        function showAlert(message, type) {
+    
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            const alert = document.createElement('div');
+            alert.className = `alert animate__animated animate__fadeInDown`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'times-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            // Style the alert based on type
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.left = '50%';
+            alert.style.transform = 'translateX(-50%)';
+            alert.style.padding = '12px 24px';
+            alert.style.borderRadius = '8px';
+            alert.style.color = 'white';
+            alert.style.fontWeight = '600';
+            alert.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            alert.style.zIndex = '1000';
+            alert.style.display = 'flex';
+            alert.style.alignItems = 'center';
+            alert.style.gap = '10px';
+            
+            switch(type) {
+                case 'error':
+                    alert.style.background = 'linear-gradient(135deg, #ff6b6b, #ff8e8e)';
+                    break;
+                case 'warning':
+                    alert.style.background = 'linear-gradient(135deg, #ffd166, #ffdd7f)';
+                    alert.style.color = '#333';
+                    break;
+                case 'success':
+                    alert.style.background = 'linear-gradient(135deg, #06d6a0, #4cc9f0)';
+                    break;
+                default:
+                    alert.style.background = 'linear-gradient(135deg, #118ab2, #073b4c)';
+            }
+            
+            document.body.appendChild(alert);
+            
+    
+            setTimeout(() => {
+                alert.classList.add('animate__fadeOutUp');
+                setTimeout(() => {
+                    alert.remove();
+                }, 500);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
