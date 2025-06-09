@@ -1,53 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Terabox Video Player</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            margin: 0;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        video {
-            width: 100%;
-            height: 100%;
-            background: black;
-        }
-        #error {
-            color: white;
-            font-size: 18px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Video Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    video {
+      width: 100%;
+      max-width: 720px;
+      height: auto;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div id="player-container">
-        <video id="video" controls autoplay></video>
-        <div id="error" style="display: none;">❌ Invalid or missing video URL.</div>
-    </div>
+  <video id="video" controls autoplay></video>
 
-    <script>
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const videoUrl = params.get('url');
 
-        const videoUrl = getQueryParam("url");
+      if (!videoUrl) {
+        document.body.innerHTML = "<h2 style='color:white;text-align:center;'>❌ No video URL provided.</h2>";
+        return;
+      }
 
-        const video = document.getElementById("video");
-        const error = document.getElementById("error");
+      // Dummy preload trigger (to solve Telegram lazy loading)
+      const dummy = document.createElement('img');
+      dummy.src = videoUrl;
+      dummy.style.display = "none";
+      document.body.appendChild(dummy);
 
-        if (videoUrl && videoUrl.startsWith("http")) {
-            video.src = videoUrl + "&nocache=" + Date.now(); // prevent caching
-        } else {
-            video.style.display = "none";
-            error.style.display = "block";
-        }
-    </script>
+      const video = document.getElementById('video');
+
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play();
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoUrl;
+        video.addEventListener('loadedmetadata', () => {
+          video.play();
+        });
+      } else {
+        document.body.innerHTML = "<h2 style='color:white;text-align:center;'>Your browser does not support HLS playback.</h2>";
+      }
+    };
+  </script>
 </body>
 </html>
