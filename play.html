@@ -12,6 +12,8 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
     }
     video {
       width: 100%;
@@ -19,46 +21,130 @@
       height: auto;
       border-radius: 10px;
     }
+    .loader {
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    button {
+      background: #0088cc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <video id="video" controls autoplay></video>
+  <video id="video" controls autoplay class="hidden"></video>
+  <div id="loader" class="loader">Loading video, please wait...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    window.onload = function () {
+    // Detect Telegram WebView
+    const isTelegramWebView = /Telegram|WebView/i.test(navigator.userAgent);
+    
+    if (isTelegramWebView && window.Telegram && window.Telegram.WebApp) {
+      Telegram.WebApp.expand();
+      Telegram.WebApp.enableClosingConfirmation();
+      document.documentElement.style.backgroundColor = '#000';
+    }
+
+    // Preload function
+    async function preloadVideo(url) {
+      try {
+        const response = await fetch(url, { mode: 'no-cors' });
+        return response.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Main player function
+    async function initPlayer() {
       const params = new URLSearchParams(window.location.search);
       const videoUrl = params.get('url');
 
       if (!videoUrl) {
-        document.body.innerHTML = "<h2 style='color:white;text-align:center;'>❌ No video URL provided.</h2>";
+        document.getElementById('loader').innerHTML = "❌ No video URL provided.";
         return;
       }
 
-      // Dummy preload trigger (to solve Telegram lazy loading)
-      const dummy = document.createElement('img');
-      dummy.src = videoUrl;
-      dummy.style.display = "none";
-      document.body.appendChild(dummy);
-
       const video = document.getElementById('video');
+      const loader = document.getElementById('loader');
 
+      // Preload the video
+      const preloadSuccess = await preloadVideo(videoUrl);
+      if (!preloadSuccess) {
+        loader.innerHTML = "Preloading failed. Trying direct play...";
+      }
+
+      // Initialize HLS player
       if (Hls.isSupported()) {
-        const hls = new Hls();
+        const hls = new Hls({
+          enableWorker: false,
+          lowLatencyMode: true,
+          xhrSetup: function(xhr) {
+            xhr.withCredentials = true;
+          }
+        });
+
         hls.loadSource(videoUrl);
         hls.attachMedia(video);
+        
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play();
+          video.classList.remove('hidden');
+          loader.classList.add('hidden');
+          video.play().catch(e => {
+            loader.innerHTML = 'Click the play button to start video';
+            loader.classList.remove('hidden');
+          });
+        });
+
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            switch(data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                loader.innerHTML = 'Network error. Trying to recover...';
+                hls.startLoad();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                loader.innerHTML = 'Media error. Trying to recover...';
+                hls.recoverMediaError();
+                break;
+              default:
+                hls.destroy();
+                loader.innerHTML = 'Failed to load video. <button onclick="window.location.reload()">Retry</button>';
+            }
+          }
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = videoUrl;
         video.addEventListener('loadedmetadata', () => {
+          video.classList.remove('hidden');
+          loader.classList.add('hidden');
           video.play();
         });
       } else {
-        document.body.innerHTML = "<h2 style='color:white;text-align:center;'>Your browser does not support HLS playback.</h2>";
+        loader.innerHTML = "Your browser does not support HLS playback.";
       }
-    };
+
+      // Fallback timeout
+      setTimeout(() => {
+        if (video.readyState < 2) {
+          loader.innerHTML = 'Video loading slowly...<br><button onclick="window.location.reload()">Refresh Player</button>';
+        }
+      }, 5000);
+    }
+
+    // Initialize when page loads
+    window.onload = initPlayer;
   </script>
 </body>
 </html>
