@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Terabox Video Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+        #error {
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="player-container">
+        <video id="video" controls autoplay></video>
+        <div id="error" style="display: none;">❌ Invalid or missing video URL.</div>
+    </div>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const videoUrl = getQueryParam("url");
+
+        const video = document.getElementById("video");
+        const error = document.getElementById("error");
+
+        if (videoUrl && videoUrl.startsWith("http")) {
+            video.src = videoUrl + "&nocache=" + Date.now(); // prevent caching
+        } else {
+            video.style.display = "none";
+            error.style.display = "block";
+        }
+    </script>
+</body>
+</html>
