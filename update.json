@@ -1,5 +1,5 @@
 {
-  "update": false,
+  "update": true,
   "url": "https://example.com",
   "forgot": true,
   "share": "https://example.com"
