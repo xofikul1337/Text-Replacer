@@ -1,5 +1,5 @@
 {
   "update": false,
   "url": "example.com",
-  "forgot": true
+  "forgot": false
 }
