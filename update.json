@@ -1,6 +1,6 @@
 {
   "update": false,
   "url": "https://example.com",
-  "forgot": false,
+  "forgot": true,
   "share": "https://example.com"
 }
